@@ -1,9 +1,8 @@
 # callhome-requests
-This is where all the Olympus callhome requests live!
 
 # About Call Home
 ## What is Call Home?
-Call Home is a framework for collecting data from any Cerner nodes with Olympus presence and centralizing that data. 
+Call Home is a framework for collecting data from any ORACLE Cerner nodes with Olympus presence and centralizing that data. 
 Here is the general flow of how data is retrieved with Call Home:
 1. "Call Home Requests" are distributed to all nodes with Olympus presence. Call Home Requests schedule themselves, and 
 are akin to cron jobs.
