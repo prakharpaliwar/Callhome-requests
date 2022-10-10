@@ -1,0 +1,69 @@
+WITH DB_HEALTH_METRICS AS (
+SELECT
+	/*+ materialize  OLYMPUS<CHR:ORACLE_HEALTH_METRICS> */
+	inst_id,
+	TRUNC(end_time, 'MI') AS END_TIME,
+	METRIC_NAME,
+	CASE
+		WHEN metric_name IN ('Response Time Per Txn',
+		'SQL Service Response Time') THEN VALUE*10
+		ELSE VALUE
+	END AS METRIC_VALUE
+FROM
+	GV$SYSMETRIC_HISTORY
+WHERE
+	metric_name IN ( 'Database Time Per Sec' ,
+	'Database Wait Time Ratio' ,
+	'Database CPU Time Ratio' ,
+	'Host CPU Utilization (%)' ,
+	'Response Time Per Txn' ,
+	'SQL Service Response Time',
+	'User Transaction Per Sec' ,
+	'Executions Per Sec' ,
+	'DB Block Changes Per Sec' ,
+	'I/O Megabytes per Second' )
+	AND GROUP_ID = 2
+	AND intsize_csec > 3000
+	AND end_time > SYSDATE - 1.0166667 / 1440
+	AND inst_id IN (
+		SELECT inst_id
+	FROM
+		(
+			SELECT a.inst_id,
+			a.cnt,
+			ROUND(a.cnt / b.cnt * 100, 1) AS percent
+		FROM
+			(
+				SELECT inst_id,
+				COUNT(*) AS CNT
+			FROM
+				gv$session
+			WHERE
+				username != 'SYS'
+			GROUP BY
+				inst_id
+			ORDER BY
+				inst_id) a,
+			(
+				SELECT COUNT(*) AS CNT
+			FROM
+				gv$session
+			WHERE
+				username != 'SYS') b
+		GROUP BY
+			a.inst_id,
+			a.cnt / b.cnt,
+			a.cnt)
+	WHERE
+		percent > 10)
+	) 
+SELECT inst_id,
+	end_time,
+	metric_name,
+	metric_value
+FROM
+	DB_HEALTH_METRICS
+ORDER BY
+	1,
+	2,
+	3

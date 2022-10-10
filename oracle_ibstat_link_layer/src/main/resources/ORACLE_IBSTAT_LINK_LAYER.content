@@ -1,0 +1,6 @@
+#!/bin/sh
+
+ibstats_results=$(ibstat|grep "Link layer"| tail -1 | awk '{print $3}')
+
+echo "<STAT_NAME>ORACLE_IBSTAT_LINK_LAYER</STAT_NAME><VALUE_STR>$ibstats_results</VALUE_STR>"
+

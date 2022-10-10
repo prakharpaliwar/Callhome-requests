@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+    <name>ORACLE_IBSTAT_LINK_LAYER</name>
+    <type>NODE_SCRIPT</type>
+	<scriptLanguage>KSH</scriptLanguage>
+	<format>XML</format>
+	<description>Collects the Link layer information from ibstat</description>
+	<requestQueue>ORACLE_CONFIG_QUEUE</requestQueue>
+	<serviceFilter><![CDATA[var server_type = properties.getTechnologyProperties().get('server_type'); (properties.getOS() == 4) && (server_type != null) && (server_type.equals("Oracle DB") == true || server_type.equals("HNAM Oracle DB") == true)]]></serviceFilter>
+	<factory>queued.callhome.activity.factory</factory>
+	<scheduler><![CDATA[<scheduler alignment-id="approximate.alignment.factory" schedule="1-DAY" min-offset="3600" max-offset="7200" />]]></scheduler>
+    <timeout>600</timeout>
+    
+	<fields>
+		<field>
+		  <column>STAT_NAME</column>
+		  <description>Name of the request</description>
+		  <datatype>string</datatype>
+		  <length>255</length>
+		</field>
+		<field>
+		  <column>VALUE_STR</column>
+		  <description>The value of the property Link layer</description>
+		  <datatype>string</datatype>
+		  <length>255</length>
+		</field>
+	</fields>
+</callHomeRequest>

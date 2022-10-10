@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+    <name>ORACLE_INFINIBAND_BONDING_OPTS</name>
+    <type>NODE_SCRIPT</type>
+    <format>XML</format>
+    <description>Collects infiniband settings information</description>
+    <requestQueue>ORACLE_CONFIG_QUEUE</requestQueue>
+    <serviceFilter><![CDATA[var server_type = properties.getTechnologyProperties().get('server_type'); (properties.getOS() == 1 || properties.getOS() == 4) && (server_type != null) && (server_type.equals("Oracle DB") == true || server_type.equals("HNAM Oracle DB") == true || server_type.equals("HNAM App/DB") == true) || server_type.indexOf("iBus App") != -1 || server_type.indexOf("iBus App/DB") != -1]]></serviceFilter>
+    <factory>queued.callhome.activity.factory</factory>
+	<timeout>600</timeout>
+    <scheduler><![CDATA[<scheduler alignment-id="approximate.alignment.factory" schedule="1-DAY" min-offset="3600" max-offset="7200" />]]></scheduler>
+    <scriptLanguage>KSH</scriptLanguage>
+    <verticaSchema>olympus</verticaSchema>
+     <fields>
+        <field>
+            <column>MODE</column>
+            <description>Mode of operation</description>
+            <datatype>string</datatype>
+            <length>255</length>
+        </field>
+        <field>
+          <column>USE_CARRIER</column>
+            <description>Specifies whether or not miimon should use MII or ETHTOOL ioctls vs. netif_carrier_ok() to determine the link status</description>
+            <datatype>integer</datatype>
+            <length>0</length>
+        </field>
+        <field>
+            <column>DOWNDELAY</column>
+            <description>Specifies the time, in milliseconds, to wait before disabling a slave after a link failure has been detected</description>
+            <datatype>integer</datatype>
+            <length>0</length>
+        </field>
+        <field>
+            <column>UPDELAY</column>
+            <description>TSpecifies the time, in milliseconds, to wait before enabling a slave after a link recovery has been detected</description>
+            <datatype>integer</datatype>
+			<length>0</length>
+        </field>
+        <field>
+            <column>NUM_GRAT_ARP</column>
+            <description>Number of gratuitous ARP packets to send on failover event</description>
+            <datatype>integer</datatype>
+            <length>0</length>
+        </field>
+        <field>
+            <column>MIIMON</column>
+            <description>Link check interval in milliseconds</description>
+            <datatype>integer</datatype>
+            <length>0</length>
+        </field>
+    </fields>
+
+<functions>
+  <function>
+    <alias>client</alias>
+    <orderIndex>1</orderIndex>
+  </function>
+  <function>
+    <alias>enterprise</alias>
+  </function>
+  <function>
+    <alias>domain</alias>
+  </function>
+  <function>
+    <alias>node</alias>
+    <orderIndex>2</orderIndex>
+  </function>
+  <function>
+    <alias>qualify_time</alias>
+    <orderIndex>3</orderIndex>
+    <partitionKey>true</partitionKey>
+  </function>
+  <function>
+    <alias>uploadtime</alias>
+  </function>
+</functions>
+</callHomeRequest>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>ORACLE_HOME_CANDIDATES_COUNT</name>
+    <requestQueue>ORACLE_CONFIG_QUEUE</requestQueue>
+    <type>NODE_SCRIPT</type>
+    <scriptLanguage>KSH</scriptLanguage>
+    <format>XML</format>
+    <serviceFilter><![CDATA[var tech_properties = properties.getTechnologyProperties(); (tech_properties != null) && (tech_properties.get('tags') != null); var array = properties.getTechnologyProperties().get('tags').split(','); array.indexOf("Oracle") != -1]]></serviceFilter>
+    <factory>queued.callhome.activity.factory</factory>
+    <scheduler><![CDATA[<scheduler alignment-id="approximate.alignment.factory" schedule="1-DAY" min-offset="3600" max-offset="7200" />]]></scheduler>
+
+    <description>Find existing Oracle homes</description>
+    <verticaSchema>olympus</verticaSchema>    
+    <timeout>600</timeout>
+    
+    <hadoopConfig>
+        <payloadMappings>/olympus/oracle/oracle-generic-payload-mappings.xml</payloadMappings>
+    </hadoopConfig>
+
+    <fields>
+        <field>
+          <column>STAT_NAME</column>
+          <datatype>string</datatype>
+          <length>255</length>
+        <description>Users oracle home path</description>
+        </field>
+        <field>
+          <column>VALUE_INT</column>
+          <datatype>integer</datatype>
+          <length>0</length>
+        <description>Oracle home count</description>
+        </field>
+    </fields>
+
+</callHomeRequest>

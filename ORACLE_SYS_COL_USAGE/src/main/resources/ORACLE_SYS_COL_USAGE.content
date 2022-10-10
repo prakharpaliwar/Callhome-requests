@@ -1,0 +1,23 @@
+SELECT /*OLYMPUS:CHR<ORACLE_SYS_COL_USAGE>*/
+    cu.obj# AS object_number,
+    obj.object_name AS object_name,
+    cu.intcol# AS column_number,
+    atc.column_name AS column_name,
+    cu.equality_preds AS equality_preds,
+    cu.equijoin_preds AS equijoin_preds,
+    cu.nonequijoin_preds AS nonequijoin_preds,
+    cu.range_preds AS range_preds,
+    cu.like_preds AS like_preds,
+    cu.null_preds AS null_preds,
+    cu.timestamp AS timestamp,
+	NULL AS flags
+FROM 
+    sys.col_usage$ cu,
+    dba_objects obj,
+    all_tab_columns atc
+WHERE
+    obj.object_id = cu.obj# AND
+    atc.table_name = obj.object_name AND
+    atc.column_id = cu.intcol# AND
+    atc.owner = 'V500' AND
+    obj.owner = 'V500'

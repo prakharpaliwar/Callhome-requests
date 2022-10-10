@@ -1,0 +1,15 @@
+#!/bin/sh
+file="/etc/sysconfig/network-scripts/ifcfg-bond1"
+if [ -e "$file" ]
+then
+	output=$(grep BONDING_OPTS /etc/sysconfig/network-scripts/ifcfg-bond1 | awk '{ gsub("=", " ") } 6')
+	value=$(echo $output | sed -e 's/\<BONDING_OPTS\>//g')
+	finalstring=$(echo ${value//\"})
+	MODE=$(echo $finalstring | awk -v RS='[ ]' '{printf "%s%s",$0,(NR%2?" ":"\n")}' |grep -i "mode" | awk '{print $2}')
+	USE_CARRIER=$(echo $finalstring | awk -v RS='[ ]' '{printf "%s%s",$0,(NR%2?" ":"\n")}' |grep -i "use_carrier" | awk '{print $2}')
+	DOWNDELAY=$(echo $finalstring | awk -v RS='[ ]' '{printf "%s%s",$0,(NR%2?" ":"\n")}' |grep -i "downdelay" | awk '{print $2}')
+	UPDELAY=$(echo $finalstring | awk -v RS='[ ]' '{printf "%s%s",$0,(NR%2?" ":"\n")}' |grep -i "updelay" | awk '{print $2}')
+	NUM_GRAT_ARP=$(echo $finalstring | awk -v RS='[ ]' '{printf "%s%s",$0,(NR%2?" ":"\n")}' |grep -i "num_grat_arp" | awk '{print $2}')
+	MIIMON=$(echo $finalstring | awk -v RS='[ ]' '{printf "%s%s",$0,(NR%2?" ":"\n")}' |grep -i "miimon" | awk '{print $2}')
+	echo "<MODE>""$MODE""</MODE>""<USE_CARRIER>""$USE_CARRIER""</USE_CARRIER>""<DOWNDELAY>""$DOWNDELAY""</DOWNDELAY>""<UPDELAY>""$UPDELAY""</UPDELAY>""<NUM_GRAT_ARP>""$NUM_GRAT_ARP""</NUM_GRAT_ARP>""<MIIMON>""$MIIMON""</MIIMON>"
+fi

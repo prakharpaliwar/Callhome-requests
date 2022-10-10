@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>ORACLE_SYS_COL_USAGE</name>
+  <description>Collects the usage pattern of columns for each table used in equality predicate in a query.</description>
+  <type>SQL</type>
+  <format>JSON</format>
+  <serviceFilter><![CDATA[var result = false; var dsarray = properties.getDataStores(); for(var i=0; i<dsarray.length;i++) {if(dsarray[i].getVendor() != null && dsarray[i].getVendor().equalsIgnoreCase('oracle')){result = true;} } result;]]></serviceFilter>
+  <factory>schedulable.callhome.activity.factory</factory>
+  <scheduler><![CDATA[<scheduler alignment-id="approximate.alignment.factory" schedule="1-DAY" min-offset="3600" max-offset="7200" />]]></scheduler>
+  <timeout>600</timeout>
+  
+  <hadoopConfig>
+    <payloadMappings>/olympus/oracle/oracle-sys-col-usage-payload-mappings.xml</payloadMappings>
+    <jobName>hadoop-oracle-config-job</jobName>
+    <esmVerticaSchema>olympus</esmVerticaSchema>
+  </hadoopConfig>
+  
+  <fields>
+    <field>
+      <column>object_number</column>
+      <description>object ID for the table</description>
+      <datatype>long</datatype>
+    </field>
+    <field>  
+      <column>object_name</column>
+      <description>name of the table/object</description>
+      <datatype>string</datatype>
+	  <length>150</length>
+    </field>
+    <field>  
+      <column>column_number</column>
+      <description>column ID for a column in a table</description>
+      <datatype>long</datatype>
+    </field>
+    <field>  
+      <column>column_name</column>
+      <description>name of the column in the table/object</description>
+      <datatype>string</datatype>
+	  <length>150</length>
+    </field>
+	<field>  
+      <column>equality_preds</column>
+      <description>total number of equality predicates used on the column</description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>equijoin_preds</column>
+      <description>total number of equijoin predicates used on the column</description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>nonequijoin_preds</column>
+      <description>total number of nonequijoin predicates used on the column</description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>range_preds</column>
+      <description>total number of range predicates used on the columntotal number of range predicates used on the column</description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>like_preds</column>
+      <description>total number of like predicates used on the column </description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>null_preds</column>
+      <description>total number of null predicates used on the column </description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>timestamp</column>
+      <description>update date for the row</description>
+      <datatype>timestamp</datatype>
+    </field>
+	<field>  
+      <column>flags</column>
+      <description>bitwise flags for the object</description>
+      <datatype>long</datatype>
+    </field>
+  </fields>
+
+<functions>
+  <function>
+    <alias>client</alias>
+    <orderIndex>1</orderIndex>
+  </function>
+  <function>
+    <alias>enterprise</alias>
+  </function>
+  <function>
+    <alias>domain</alias>
+  </function>
+  <function>
+    <alias>node</alias>
+    <orderIndex>2</orderIndex>
+  </function>
+  <function>
+    <alias>qualify_time</alias>
+    <orderIndex>3</orderIndex>
+    <partitionKey>true</partitionKey>
+  </function>
+  <function>
+    <alias>uploadtime</alias>
+  </function>
+  <function>
+    <alias>start_date</alias>
+  </function>
+  <function>
+    <alias>end_date</alias>
+  </function>
+</functions>
+</callHomeRequest>

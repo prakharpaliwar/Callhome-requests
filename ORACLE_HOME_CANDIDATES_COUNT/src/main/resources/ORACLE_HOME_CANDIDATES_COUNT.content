@@ -1,0 +1,4 @@
+for home in `find /u0* -name oerr -type f 2>&1 | grep -v proc | grep -v "Permission denied" |awk -F 'bin' '{print $1}'`;
+do
+        echo '<STAT_NAME>ORACLE_HOME_CANDIDATES_COUNT</STAT_NAME><VALUE_STR>'`echo $home`'</VALUE_STR><VALUE_INT>'`/usr/sbin/lsof +D $home 2>1| grep -e COMMAND -e $home | grep -v COMMAND | wc -l`'</VALUE_INT>'
+done

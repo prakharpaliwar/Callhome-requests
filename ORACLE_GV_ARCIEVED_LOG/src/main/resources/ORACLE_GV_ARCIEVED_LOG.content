@@ -1,0 +1,9 @@
+SELECT (SELECT d.NAME 
+        FROM   v$database d)          AS VALUE_STR, 
+       'Oracle_gvarchived_log'        AS STAT_NAME, 
+       (SELECT i.instance_name 
+        FROM   gv$instance i 
+        WHERE  i.inst_id = a.inst_id) AS METADATA1, 
+       a.* 
+FROM   gv$archived_log a 
+       where a.completion_time between ? AND ?

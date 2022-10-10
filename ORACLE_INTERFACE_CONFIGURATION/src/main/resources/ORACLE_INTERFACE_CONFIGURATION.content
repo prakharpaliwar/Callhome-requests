@@ -1,0 +1,30 @@
+#!/bin/ksh
+
+# ********************************************************************
+# Purpose   : Oracle Interface Configuration (OIFCFG) command for
+#             network interfaces
+# Usgae     : Option 'iflist' and 'getif' is used to retrieve n/w
+#             components configuration information
+# Values    : STAT_NAME -> Interface Name
+#           : VALUE_STR -> Subnet IP
+#           : METADATA1 -> Interface Mode
+#           : METADATA2 -> Interface Type
+# Note      : IP address grep is to avoid collecting command STDOUT err msg
+#           : e.g. Failed to initialize GPnP
+# ********************************************************************
+
+output="$(
+su - oracle << 'CLUSTERINTINC'
+if [[ ! -z $GRID_HOME ]];then
+  # Available interfaces
+  $GRID_HOME/bin/oifcfg iflist | grep -E '([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print "<STAT_NAME>" $1 "</STAT_NAME><VALUE_STR>" $2 "</VALUE_STR><METADATA1></METADATA1><METADATA2></METADATA2>"}'
+
+  # Defined interface type
+  $GRID_HOME/bin/oifcfg getif | grep -E '([0-9]{1,3}\.){3}[0-9]{1,3}' | awk '{print "<STAT_NAME>" $1 "</STAT_NAME><VALUE_STR>" $2 "</VALUE_STR><METADATA1>" $3 "</METADATA1><METADATA2>" $4 "</METADATA2>"}'
+else
+  echo "<STAT_NAME>Variable \$GRID_HOME is not set</STAT_NAME><VALUE_STR>Variable \$GRID_HOME is not set</VALUE_STR><METADATA1></METADATA1><METADATA2></METADATA2>"
+fi
+CLUSTERINTINC
+)"
+
+echo "$output" | grep "<STAT_NAME>"
