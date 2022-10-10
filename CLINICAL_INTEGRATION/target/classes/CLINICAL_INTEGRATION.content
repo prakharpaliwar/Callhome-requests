@@ -1,0 +1,1 @@
+select /* OLYMPUS<CHR:CLINICAL_INTEGRATION> */'CLINICAL_INTEGRATION' AS STAT_NAME,count(*) AS VALUE_INT from sch_event_action where action_meaning = 'REQUEST' and req_action_meaning = 'SCHEDULE' and updt_task = 500196 and updt_dt_tm > sysdate - 15

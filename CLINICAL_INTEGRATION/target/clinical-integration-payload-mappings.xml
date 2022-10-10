@@ -1,0 +1,52 @@
+<payload-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+ xsi:noNamespaceSchemaLocation="http://repo.esm.cerner.corp/schema/2009/bigdata-config.xsd"> 
+	<function alias="client" id="esmdata"> 
+		<param name="field" value="CLIENT" />
+	</function>
+
+	<function alias="enterprise" id="esmdata"> 
+		<param name="field" value="ENTERPRISE" />
+	</function>
+
+	<function alias="domain" id="esmdata"> 
+		<param name="field" value="DOMAIN" />
+	</function>
+
+	<function alias="node" id="esmdata"> 
+		<param name="field" value="NODE" />
+	</function>
+
+	<function alias="qualify_time" id="esmdata"> 
+		<param name="field" value="QUALIFY_TIME" />
+	</function>
+
+	<function alias="uploadtime" id="uploadtime"> 
+	</function>
+
+	<function alias="start_date" id="esmdata"> 
+		<param name="field" value="START_DATE" />
+	</function>
+
+	<function alias="end_date" id="esmdata"> 
+		<param name="field" value="END_DATE" />
+	</function>
+
+	<payload-converter definition="CLINICAL_INTEGRATION" destination="CLINICAL_INTEGRATION" append-key="true">
+		<converter-field payload-field="CLIENT" destination-field="CLIENT" destination-type="varchar" length="255" normalize="true" function="client" not-null="true" order-by-index="1" />
+		<converter-field payload-field="ENTERPRISE" destination-field="ENTERPRISE" destination-type="varchar" length="255" normalize="true" function="enterprise" />
+		<converter-field payload-field="DOMAIN" destination-field="DOMAIN" destination-type="varchar" length="255" normalize="true" function="domain" />
+		<converter-field payload-field="NODE" destination-field="NODE" destination-type="varchar" length="255" normalize="true" function="node" not-null="true" order-by-index="2" />
+		<converter-field payload-field="COLLECTDATETIME" destination-field="COLLECTDATETIME" destination-type="timestamp" function="qualify_time" not-null="true" order-by-index="3" partition-key="true" />
+		<converter-field payload-field="UPLOAD_DT_TM" destination-field="UPLOAD_DT_TM" destination-type="timestamp" function="uploadtime" />
+		<converter-field payload-field="START_DT_TM" destination-field="START_DT_TM" destination-type="timestamp" function="start_date" />
+		<converter-field payload-field="END_DT_TM" destination-field="END_DT_TM" destination-type="timestamp" function="end_date" />
+		<converter-field payload-field="STAT_NAME" destination-field="STAT_NAME" destination-type="varchar" length="40" />
+		<converter-field payload-field="VALUE_INT" destination-field="VALUE_INT" destination-type="long" />
+	</payload-converter>
+
+	<payload-definition name="CLINICAL_INTEGRATION" type="ESM_JSON" payload-status="true">
+		<entity-filter entity-type="/source:string/olympus:string/clinical_integration:string/client:string/target1:string/target2:string/target3:string/timestamp:int64" />
+		<payload-field name="STAT_NAME" proto-type="string" />
+		<payload-field name="VALUE_INT" proto-type="long" />
+	</payload-definition>
+</payload-configuration>

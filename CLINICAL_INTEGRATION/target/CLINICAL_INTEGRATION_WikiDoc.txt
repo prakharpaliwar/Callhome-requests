@@ -1,0 +1,42 @@
+
+<<START_OF_INSTRUCTIONS>>
+* Create a new Wiki page as a child of the big data sets page: https://wiki.ucern.com/display/EN/Olympus+Big+Data+Sets
+* Name the page with your request name
+* On the Formatting Bar in the wiki editor click the "+" sign to insert more content and select "{} Markup"
+* Paste all content of this file between the START and END OF DOCUMENTATION tags.
+* Fill out the field and request description TODO items.
+* Review and save the page.  Finally, add a reference to it to the main big data page
+<<END_OF_INSTRUCTIONS>>
+
+<<START_DOCUMENTATION>>
+
+h2. CLINICAL_INTEGRATION
+*Description:* Data related to clinical integration pieces of Scheduling
+*Olympus Service Name:* Call Home 2.0
+*Release Version:* 4.0.0
+*Vertica Table:* CLINICAL_INTEGRATION
+*Payload Name:* CLINICAL_INTEGRATION
+*Queue Name:* NO_QUEUE
+*Interval:* TODO
+
+h3. Field Definitions
+|| Field || DataType || Description ||
+| CLIENT| string| The client mnemonic. |
+| ENTERPRISE| string| The name Olympus enterprise where the process that served up the data resides. |
+| DOMAIN| string| The domain from which the data came. |
+| NODE| string| The host from which the data came. |
+| COLLECTDATETIME| timestamp| The time the record was collected. |
+| UPLOAD_DT_TM| timestamp| The time the record was written from the client side to the Cerner cloud. |
+| START_DT_TM| timestamp| The start date range (or lower bound date) for the data. |
+| END_DT_TM| timestamp| The end date range (or upper bound date) from the data. |
+| STAT_NAME| string| Request Name |
+| VALUE_INT| long| Count |
+| UPDT_DT_TM | Date | The time the record was written into Vertica. |
+
+h3. Source Query
+{code:sql}
+select /* OLYMPUS<CHR:CLINICAL_INTEGRATION> */'CLINICAL_INTEGRATION' AS STAT_NAME,count(*) AS VALUE_INT from sch_event_action where action_meaning = 'REQUEST' and req_action_meaning = 'SCHEDULE' and updt_task = 500196 and updt_dt_tm > sysdate - 15
+
+{code}
+
+<<END_OF_DOCUMENTATION>>
