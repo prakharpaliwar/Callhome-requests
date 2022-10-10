@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>CYCLE_SERVER</name>
+  <type>DOMAIN_JAVA_SCRIPT</type>
+  <format>JSON</format>
+  <serviceFilter><![CDATA[var result = false; var dsarray = properties.getServices(); for(var i=0; i<dsarray.length;i++) {if(dsarray[i] != null && dsarray[i].equalsIgnoreCase('BackendServers') && properties.getOS() != 0){result = true;} } result;]]></serviceFilter>
+  <factory>callback.factory</factory>
+  <timeout>20</timeout>
+  <scheduler><![CDATA[<scheduler alignment-id="no.alignment.factory" schedule="5-MINUTE" />]]></scheduler>
+  <scriptLanguage>JAVA_SCRIPT</scriptLanguage>
+  <description>Servers collection replacement</description>
+ <fields>
+    <field>
+      <column>SCRIPT_NAME</column>
+      <description>The name of the script</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>Child_script</column>
+      <description>The name of the child script. Empty in this request.</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>ACTION_PERFORMED</column>
+      <description>The description of the action performed by the self healing script</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>ERROR</column>
+      <description>Column denoting if there was an error with given action.
+	  In this request: 0 = no error. 1=error occured</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>TARGET</column>
+      <description>The name of the service we are going to attempt to restart.</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>STATUS</column>
+      <description>Column denoting the status of the action performed. In this case the status can be "running", "stopped" or "maintenance"</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>METADATA</column>
+      <description>Additional metadata associated with the request. </description>
+      <datatype>string</datatype>
+      <length>1000</length>
+    </field>
+
+  </fields>
+
+<!-- The list of functions that will go to the payload mappings file. 
+     Remove functions and change orderIndex/partitionKey as desired. -->
+
+<functions>
+  <function>
+    <alias>client</alias>
+    <orderIndex>1</orderIndex>
+  </function>
+  <function>
+    <alias>enterprise</alias>
+  </function>
+  <function>
+    <alias>node</alias>
+    <orderIndex>2</orderIndex>
+  </function>
+  <function>
+    <alias>qualify_time</alias>
+    <orderIndex>3</orderIndex>
+    <partitionKey>true</partitionKey>
+  </function>
+  <function>
+    <alias>uploadtime</alias>
+  </function>
+</functions>
+
+</callHomeRequest>

@@ -1,0 +1,113 @@
+var serverManager = delegate.getMBeanServiceManager();
+var services = serverManager.getServiceEntries("BackendServers");
+var backendServersMBean = null;
+var target = delegate.getTarget();
+var targetKey = target.getTargetDomain();
+for (i = 0; i < services.length; i++)
+{
+    var service = services[i];
+    var domain = service.getProperties().get("ServiceDomain");
+    if (domain != null)
+    {
+        if (domain.equalsIgnoreCase(targetKey))
+        {
+            backendServersMBean = service.getObject();
+        }
+    }
+}
+var objectArray = Java.type("java.lang.Object[]");
+var stringObject = Java.type("java.lang.String");
+
+var mapType = Java.type("java.util.HashMap");
+var paramsMap =  new mapType();
+
+for each(var param in params)
+{
+	paramsMap.put(param.getKey().toLowerCase(), param.getValue()); 
+}
+if(paramsMap.containsKey("instance"))
+{
+	var tmp = null;
+	try
+        {
+	    tmp=backendServersMBean.cycleServer(paramsMap.get("instance"))
+	    
+            var results = [
+		"CYCLE_SERVER",
+		"cycleServer",
+		"TRUE",
+		"0",
+		paramsMap.get("instance"),
+		"SUCCESS",
+		"EntryId : "+tmp.getEntryID()+" Instance_ID : "+tmp.getInstanceID()+" Status : "+tmp.getStatus()+" Reason : "+tmp.getStatusReason()
+            ];
+	    
+            delegate.writeToFile(Java.to(results, objectArray));
+        }
+	catch (err)
+        {
+            var results = [
+                "CYCLE_SERVER",
+                "cycleServer",
+                "FALSE",
+                "1",
+                paramsMap.get("instance"),
+                "FAIL",
+                err.message
+            ];
+            delegate.writeToFile(Java.to(results, objectArray));
+        }
+		
+}
+else if(paramsMap.containsKey("id"))
+{
+	var tmp = null;
+	try
+        {
+            tmp=backendServersMBean.cycleServerEntry(paramsMap.get("id"),false);
+	    var metadata = new stringObject();
+	    for each(var res in tmp)
+	    {
+	    	metadata += "EntryId : "+res.getEntryID()+" Instance_ID : "+res.getInstanceID()+" Status : "+res.getStatus()+" Reason : "+res.getStatusReason() + "; ";
+	    }
+		
+            var results = [
+                "CYCLE_SERVER",
+		"cycleServerEntry",
+                "TRUE",
+                "0",
+                paramsMap.get("id"),
+                "SUCCESS",
+                metadata
+            ];
+            delegate.writeToFile(Java.to(results, objectArray));
+        }
+        catch (err)
+        {
+            var results = [
+                "CYCLE_SERVER",
+                "cycleServerEntry",
+                "FALSE",
+                "1",
+                paramsMap.get("id"),
+                "FAIL",
+                err.message
+            ];
+            delegate.writeToFile(Java.to(results, objectArray));
+        }
+	
+}
+else
+{
+	var results = [
+                "CYCLE_SERVER",
+                "",
+                "FALSE",
+                "1",
+                "No params exist",
+                "FAIL",
+                "Neither id nor instance exist"
+            ];
+	delegate.writeToFile(Java.to(results, objectArray));
+}
+

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <parent>
+    <groupId>com.cerner.management.callhome.requests</groupId>
+    <artifactId>callhome-parent-pom</artifactId>
+    <version>1.0.2</version>
+  </parent>
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.cerner.management.callhome.requests</groupId>
+  <artifactId>cycle_server</artifactId>
+  <version>1.3.0-SNAPSHOT</version>
+  <name>cycle_server</name>
+
+  <scm>
+    <url>https://github.cerner.com/olympus/callhome-requests</url>
+    <connection>scm:git:git@github.cerner.com:Olympus/callhome-requests.git</connection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <url>${urlBase}/${artifactId}/${version}</url>
+  
+  <properties>
+    <callhome.request.name>CYCLE_SERVER</callhome.request.name>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.cerner.management.callhome.build</groupId>
+        <artifactId>management-callhome-request-builder</artifactId>
+          <version>${project.requestbuilder.version}</version>
+        <configuration>
+          <contentFile>${basedir}/src/main/resources/${callhome.request.name}.content</contentFile>
+          <xmlFile>${basedir}/src/main/resources/${callhome.request.name}.xml</xmlFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>build-request</goal>
+            </goals>
+            <phase>install</phase>
+          </execution>
+          <execution>
+             <id>second</id>
+            <goals>
+              <goal>build-content-fields</goal>
+            </goals>
+            <phase>generate-sources</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>esm-release</id>
+      <name>ESM Release Repository</name>
+      <url>http://repo.esm.cerner.corp/repo/esm</url>
+    </repository>
+    <repository>
+      <id>esm-snapshot</id>
+      <name>ESM Snapshot Repository</name>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <checksumPolicy>warn</checksumPolicy>
+        <updatePolicy>always</updatePolicy>
+      </snapshots>
+      <url>http://repo.esm.cerner.corp/repo/esm-snapshot</url>
+    </repository>
+  </repositories>
+</project>
