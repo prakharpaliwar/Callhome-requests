@@ -1,0 +1,36 @@
+SELECT /*OLYMPUS:CHR<DISCHARGE_CENSUS_SUMMARY>*/To_date(To_char(E.disch_dt_tm, 'MM/YYYY'), 'MM/YYYY') AS MONTH_YEAR, 
+       CV_FACILITY.display                                   AS FACILITY, 
+       CV_NU.display                                         AS NURSE_UNIT, 
+       CV_ENC_TYPE.display                                   AS VISIT, 
+       CV_ENC_TYPE_CLASS.display                             AS VISIT_CLASS, 
+       CV_FIN_CLASS.display                                  AS FINANCIAL_CLASS, 
+       CV_MED.display                                        AS MEDICAL_SERVICE, 
+       CV_DISCH.display                                      AS 
+       DISCH_DISPOSITION, 
+       Sum(Round(E.disch_dt_tm - E.reg_dt_tm, 2))            AS LOS, 
+       Count (DISTINCT E.encntr_id)                          AS TOTAL_ENCOUNTERS 
+FROM   encounter E 
+       INNER JOIN code_value CV_FIN_CLASS 
+               ON CV_FIN_CLASS.code_value = E.financial_class_cd 
+       INNER JOIN code_value CV_ENC_TYPE 
+               ON CV_ENC_TYPE.code_value = E.encntr_type_cd 
+       INNER JOIN code_value CV_ENC_TYPE_CLASS 
+               ON CV_ENC_TYPE_CLASS.code_value = E.encntr_type_class_cd 
+       INNER JOIN code_value CV_FACILITY 
+               ON CV_FACILITY.code_value = E.loc_facility_cd 
+       INNER JOIN code_value CV_NU 
+               ON CV_NU.code_value = E.loc_nurse_unit_cd 
+       INNER JOIN code_value CV_MED 
+               ON CV_MED.code_value = E.med_service_cd 
+       INNER JOIN code_value CV_DISCH 
+               ON CV_DISCH.code_value = E.disch_disposition_cd 
+WHERE  E.disch_dt_tm BETWEEN ? AND ? 
+       AND E.active_ind = 1 
+GROUP  BY To_date(To_char(E.disch_dt_tm, 'MM/YYYY'), 'MM/YYYY'), 
+          CV_FACILITY.display, 
+          CV_NU.display, 
+          CV_ENC_TYPE.display, 
+          CV_ENC_TYPE_CLASS.display, 
+          CV_FIN_CLASS.display, 
+          CV_MED.display, 
+          CV_DISCH.display 

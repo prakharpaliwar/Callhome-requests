@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>DISCHARGE_CENSUS_SUMMARY</name>
+  <description>Collects Sums total LOS and counts total encounters for facility, nurse unit, visit, visit class, financial class, and medical service</description>
+  <type>SQL</type>
+  <format>JSON</format>
+  <serviceFilter><![CDATA[var result = false; var dsarray = properties.getDataStores(); for(var i=0; i<dsarray.length;i++) {if(dsarray[i].getPurpose() != null && dsarray[i].getPurpose().equalsIgnoreCase('MILLENNIUM')){result = true;} } result;]]></serviceFilter>
+  <targetFilter><![CDATA[properties.getPurpose() != null && properties.getPurpose() == 'MILLENNIUM']]></targetFilter>
+  <factory>schedulable.callhome.activity.factory</factory>
+  <scheduler><![CDATA[<scheduler alignment-id="recovery.alignment.factory" schedule="1-HOUR" queue-depth="-1" max-seconds="259200"><scheduler alignment-id="approximate.alignment.factory" schedule="1-DAY" min-offset="60" max-offset="180" /></scheduler>]]></scheduler>	
+  <!-- A timeout of 10 minutes or less is required for all requests, excluding for monthly collections and run once audits. -->
+  <timeout>600</timeout>
+  <verticaSchema>olympus</verticaSchema>
+  <!-- Hadoop Config is optional. Multiple Hadoop Configs are allowed. -->
+  <hadoopConfig>
+    <!-- Path to the mappings in esm-ingestion-config/payload-mappings. 
+         Ex: /olympus/admin/call-home-generic-payload-mappings.xml -->
+    <payloadMappings>/olympus/millennium/misc/discharge-census-summary-payload-mappings</payloadMappings>
+    <!-- The name of the hadoop job. Ex: hadoop-callhome-admin-job -->
+    <jobName>hadoop-mill-config-job</jobName>
+  </hadoopConfig>
+ <fields>
+	<field> 
+      <column>MONTH_YEAR</column> 
+ 	  <description>The month and year the encounter was discharged</description> 
+ 	  <datatype>timestamp</datatype> 
+    </field>
+	<field> 
+      <column>FACILITY</column> 
+ 	  <description>Facility location assigned to the encounter</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>40</length> 
+    </field>
+	<field> 
+      <column>NURSE_UNIT</column> 
+ 	  <description>Nurse unit location assigned to the encounter</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>40</length> 
+     </field>
+ 	<field> 
+      <column>VISIT</column> 
+ 	  <description>Encounter type assigned to the current encounter</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>40</length> 
+    </field>
+ 	<field> 
+      <column>VISIT_CLASS</column> 
+ 	  <description>Encounter class assigned to the current encounter</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>40</length> 
+    </field>
+	<field> 
+      <column>FINANCIAL_CLASS</column> 
+ 	  <description>Payor for the current encounter</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>40</length> 
+    </field>
+ 	<field> 
+      <column>MEDICAL_SERVICE</column> 
+ 	  <description>Medical Service for the current encounter</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>40</length> 
+    </field>
+ 	<field> 
+      <column>DISCH_DISPOSITION</column> 
+ 	  <description>The conditions under which the patient left the facility at the time of discharge</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>40</length> 
+    </field>
+	<field> 
+	  <column>LOS</column> 
+ 	  <description>Sum of length of stay (reg_dt_tm-disch_dt_tm)</description> 
+ 	  <datatype>double</datatype> 
+    </field>
+	<field> 
+    <column>TOTAL_ENCOUNTERS</column> 
+ 	  <description>Total encounters</description> 
+ 	  <datatype>long</datatype> 
+     </field>
+ </fields> 
+
+
+  <parameters> 
+    <parameter> 
+      <index>1</index>
+      <parameterName>StartDate</parameterName> 
+    </parameter>
+    <parameter> 
+      <index>2</index>
+      <parameterName>EndDate</parameterName> 
+    </parameter>
+  </parameters>
+<functions>
+  <function>
+    <alias>client</alias>
+    <orderIndex>1</orderIndex>
+  </function>
+  <function>
+    <alias>enterprise</alias>
+  </function>
+  <function>
+    <alias>domain</alias>
+  </function>
+  <function>
+    <alias>node</alias>
+    <orderIndex>2</orderIndex>
+  </function>
+  <function>
+    <alias>qualify_time</alias>
+    <orderIndex>3</orderIndex>
+    <partitionKey>true</partitionKey>
+  </function>
+  <function>
+    <alias>uploadtime</alias>
+  </function>
+</functions>
+</callHomeRequest>
