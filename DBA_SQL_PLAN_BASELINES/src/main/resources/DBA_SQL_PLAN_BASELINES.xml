@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>DBA_SQL_PLAN_BASELINES</name>
+  <description>To collect all the active sql baseline records in the Millennium Database</description>
+  <type>SQL</type>
+  <format>JSON</format>
+  <serviceFilter><![CDATA[var result = false; var dsarray = properties.getDataStores(); for(var i=0; i<dsarray.length;i++) {if((dsarray[i].getVendor() != null && dsarray[i].getVendor().equalsIgnoreCase('oracle')) && (dsarray[i].getVersion() != null && (!dsarray[i].getVersion().startsWith('11')))){result = true;} } result;]]></serviceFilter>
+  <targetFilter><![CDATA[properties.getVendor() != null && properties.getVendor().equalsIgnoreCase('oracle')]]></targetFilter>
+  <factory>schedulable.callhome.activity.factory</factory>
+  <scheduler><![CDATA[<scheduler alignment-id="approximate.alignment.factory" schedule="1-DAY" min-offset="3600" max-offset="7200" />]]></scheduler>
+  <timeout>600</timeout>
+ 
+   <hadoopConfig>
+    <payloadMappings>/olympus/oracle/dba-sql-plan-baselines-payload-mappings.xml</payloadMappings>
+    <jobName>hadoop-oracle-config-job</jobName>
+    <esmVerticaSchema>olympus</esmVerticaSchema>
+   </hadoopConfig>  
+  
+  <fields>
+    <field>
+      <column>sql_handle</column>
+      <description>Unique SQL identifier in string form as a search key</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>origin</column>
+      <description>How the plan baseline was created</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>description</column>
+      <description>Text description provided for the plan baseline</description>
+      <datatype>string</datatype>
+      <length>500</length>
+    </field>
+	<field>  
+      <column>creator</column>
+      <description>User who created the plan baseline</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>created</column>
+      <description>Timestamp when the plan baseline was created</description>
+      <datatype>timestamp</datatype>
+	  <timeZoneOverride>local</timeZoneOverride>
+      <length>0</length>
+    </field>
+	<field>  
+      <column>last_modified</column>
+      <description>Timestamp when the plan baseline was last modified</description>
+      <datatype>timestamp</datatype>
+	  <timeZoneOverride>local</timeZoneOverride>
+      <length>0</length>
+    </field>
+	<field>  
+      <column>last_executed</column>
+      <description>Timestamp when the plan baseline was last executed</description>
+      <datatype>timestamp</datatype>
+	  <timeZoneOverride>local</timeZoneOverride>
+      <length>0</length>
+    </field>
+
+  </fields>
+
+<functions>
+  <function>
+    <alias>client</alias>
+    <orderIndex>1</orderIndex>
+  </function>
+  <function>
+    <alias>enterprise</alias>
+  </function>
+  <function>
+    <alias>domain</alias>
+	<orderIndex>2</orderIndex>
+  </function>
+  <function>
+    <alias>node</alias>
+  </function>
+  <function>
+    <alias>qualify_time</alias>
+    <orderIndex>3</orderIndex>
+    <partitionKey>true</partitionKey>
+  </function>
+  <function>
+    <alias>uploadtime</alias>
+  </function>
+  <function>
+    <alias>start_date</alias>
+  </function>
+  <function>
+    <alias>end_date</alias>
+  </function>
+</functions>
+
+</callHomeRequest>

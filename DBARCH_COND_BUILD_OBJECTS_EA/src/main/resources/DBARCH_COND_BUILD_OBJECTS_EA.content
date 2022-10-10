@@ -1,0 +1,10 @@
+SELECT /*OLYMPUS<CHR:DBARCH_Cond_Build_Objects_EA>*/ 
+dco.object_type   AS object_type, 
+dco.object_name   AS object_name, 
+dco.table_name    AS table_name, 
+dco.active_ind    AS active_ind, 
+dco.object_status AS object_status, 
+dco.updt_dt_tm    AS dbarch_updt_dt_tm 
+FROM   v500.dm_cb_objects dco 
+WHERE  dco.question_nbr = 4 
+AND dco.object_name NOT LIKE '%$C'

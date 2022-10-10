@@ -1,0 +1,37 @@
+SELECT /*OLYMPUS<CHR:DBA_SQL_PLAN_BASELINES>*/
+       sql_handle, 
+       origin, 
+       description, 
+       creator, 
+       Cast(created AS DATE)             AS created, 
+       Cast(last_modified AS DATE)       AS last_modified, 
+       Cast(last_executed AS DATE)       AS last_executed, 
+       dbms_lob.Substr(( CASE 
+                           WHEN sql_text LIKE '%CCL<%' THEN 
+                           Substr(sql_text, ( Instr(sql_text, 'CCL<') 
+                                              + 
+                                              4 ), ( 
+                           ( 
+                                    Instr( 
+                           sql_text, '>', ( 
+                                                              Instr( 
+                                          sql_text, 'CCL<') + 4 )) ) - ( 
+                           Instr(sql_text, 'CCL<') + 4 ) )) 
+                           WHEN sql_text LIKE '%JDBC<%' THEN 
+                           Substr(sql_text, ( Instr(sql_text, 'JDBC<' 
+                                              ) 
+                                              + 5 ), ( ( 
+                                                               Instr( 
+                           sql_text, '>', ( 
+                                                               Instr( 
+                                          sql_text, 'JDBC<') + 5 )) ) 
+                           - ( 
+                           Instr(sql_text, 'JDBC<') + 5 ) )) 
+                           ELSE Replace(Replace(Substr(sql_text, 1, 200), Chr(10 
+                                        )), Chr 
+                                (13)) 
+                         END ), 4000, 1) AS Tag 
+FROM   dba_sql_plan_baselines 
+WHERE  accepted = 'YES' 
+       AND enabled = 'YES'
+

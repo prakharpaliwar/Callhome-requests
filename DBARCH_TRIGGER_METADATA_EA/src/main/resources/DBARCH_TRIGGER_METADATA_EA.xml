@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>DBARCH_TRIGGER_METADATA_EA</name>
+  <description>Collect Entity Activity Conditional Build and Trigger data from clinical database</description>
+  <type>SQL</type>
+  <format>JSON</format>
+  <factory>audit.callhome.activity.factory</factory>
+  <serviceFilter><![CDATA[var result = false; var dsarray = properties.getDataStores(); for(var i=0; i<dsarray.length;i++) {if(dsarray[i].getPurpose() != null && dsarray[i].getPurpose().equalsIgnoreCase('MILLENNIUM')){result = true;} } result;]]></serviceFilter>
+  <targetFilter><![CDATA[properties.getPurpose() != null && properties.getPurpose() == 'MILLENNIUM']]></targetFilter>
+  <scheduler><![CDATA[<scheduler alignment-id="recovery.alignment.factory" schedule="1-HOUR" queue-depth="-1" max-seconds="259200"><scheduler alignment-id="approximate.alignment.factory" schedule="1-WEEK" min-offset="3600" max-offset="7200" /></scheduler>]]></scheduler>
+  <!-- A timeout of 10 minutes or less is required for all requests, excluding for monthly collections and run once audits. -->
+  <timeout>600</timeout>
+  <verticaSchema>olympus</verticaSchema>
+  <expiration>2020-01-23 00:00:00</expiration>
+  
+  <hadoopConfig>
+    <payloadMappings>/olympus/oracle/dbarch-trigger-metadata-ea-payload-mappings.xml</payloadMappings>
+    <jobName>hadoop-oracle-config-job</jobName>
+  </hadoopConfig>
+  
+  <fields>
+    <field>
+      <column>table_name</column>
+      <description>Name of the table which the trigger should be created on.</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>column_name</column>
+      <description>Name of the column (usually the primary key)</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>pe_col_name</column>
+      <description>If the table in "parent_name" has parent entity columns</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>parent_name</column>
+      <description>Name of the table to be checked against the "pe_col_name" to see if the trigger should be fired.</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>entity_activity_type_cd</column>
+      <description>CODE SET:28620</description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>active_ind</column>
+      <description>The table row is active or inactive.</description>
+      <datatype>long</datatype>
+    </field>
+	<field>  
+      <column>dbarch_updt_dt_tm</column>
+      <description>The date and time the row was last inserted or updated.</description>
+      <datatype>long</datatype>
+    </field>
+
+  </fields>
+
+
+
+<functions>
+  <function>
+    <alias>client</alias>
+    <orderIndex>1</orderIndex>
+  </function>
+  <function>
+    <alias>enterprise</alias>
+  </function>
+  <function>
+    <alias>node</alias>
+  </function>
+  <function>
+    <alias>domain</alias>
+    <orderIndex>2</orderIndex>
+  </function>
+  <function>
+    <alias>qualify_time</alias>
+    <orderIndex>3</orderIndex>
+    <partitionKey>true</partitionKey>
+  </function>
+  <function>
+    <alias>uploadtime</alias>
+  </function>
+  <function>
+    <alias>start_date</alias>
+  </function>
+  <function>
+    <alias>end_date</alias>
+  </function>
+</functions>
+
+</callHomeRequest>

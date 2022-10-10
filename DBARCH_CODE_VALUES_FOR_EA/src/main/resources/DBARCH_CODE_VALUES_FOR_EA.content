@@ -1,0 +1,4 @@
+select /*OLYMPUS<CHR:DBARCH_CODE_VALUES_FOR_EA>*/ cv.cdf_meaning as cdf_meaning, cv.code_value as code_value,cv.active_ind as active_ind
+from v500.code_value cv
+where cv.code_set in (28620,19009)
+and cv.cdf_meaning in ('LASTUPDT','TRACKINGUPDT','USEFNTRIGGER')

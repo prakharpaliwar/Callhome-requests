@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>DBARCH_COND_BUILD_OBJECTS_EA</name>
+  <description>Collect Entity Activity Conditional Build and Trigger data from clinical database.</description>
+  <type>SQL</type>
+  <format>JSON</format>
+  <factory>audit.callhome.activity.factory</factory>
+  <serviceFilter><![CDATA[var result = false; var dsarray = properties.getDataStores(); for(var i=0; i<dsarray.length;i++) {if(dsarray[i].getPurpose() != null && dsarray[i].getPurpose().equalsIgnoreCase('MILLENNIUM')){result = true;} } result;]]></serviceFilter>
+  <targetFilter><![CDATA[properties.getPurpose() != null && properties.getPurpose() == 'MILLENNIUM']]></targetFilter>
+  <scheduler><![CDATA[<scheduler alignment-id="recovery.alignment.factory" schedule="1-HOUR" queue-depth="-1" max-seconds="259200"><scheduler alignment-id="approximate.alignment.factory" schedule="1-DAY" min-offset="60" max-offset="180" /></scheduler>]]></scheduler>
+  <!-- A timeout of 10 minutes or less is required for all requests, excluding for monthly collections and run once audits. -->
+  <timeout>600</timeout>
+  <verticaSchema>olympus</verticaSchema>
+  <expiration>2020-01-23 00:00:00</expiration>
+  <!-- Optional Fields -->
+  <!--
+  <verticaSchema></verticaSchema>
+  <batchSize></batchSize>
+  <targetFilter><![CDATA[]]></targetFilter>
+  <expiration></expiration>
+  <scriptLanguage></scriptLanguage> 
+  -->
+  <!-- Hadoop Config is optional. Multiple Hadoop Configs are allowed. -->
+  <hadoopConfig>
+    <!-- Path to the mappings in esm-ingestion-config/payload-mappings. 
+         Ex: /olympus/admin/call-home-generic-payload-mappings.xml -->
+    <payloadMappings>/olympus/oracle/dbarch-cond-build-objects-ea-payload-mappings.xml</payloadMappings>
+    <!-- The name of the hadoop job. Ex: hadoop-callhome-admin-job -->
+    <jobName>hadoop-oracle-config-job</jobName>
+  </hadoopConfig>
+  
+  <fields>
+    <field>
+      <column>object_type</column>
+      <description>type of object</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>object_name</column>
+      <description>object name</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>table_name</column>
+      <description>table name the object resides on</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+	<field>  
+      <column>active_ind</column>
+      <description>the table row is active or inactive</description>
+      <datatype>long</datatype>
+    </field>
+    <field>  
+      <column>object_status</column>
+      <description>status of the object 'build','drop','error'</description>
+      <datatype>string</datatype>
+      <length>255</length>
+    </field>
+    <field>  
+      <column>dbarch_updt_dt_tm</column>
+      <description>the dte and time the row was last inserted or updated</description>
+      <datatype>timestamp</datatype>
+    </field>
+
+  </fields>
+
+
+	<functions>
+	  <function>
+		<alias>client</alias>
+		<orderIndex>1</orderIndex>
+	  </function>
+	  <function>
+		<alias>enterprise</alias>
+	  </function>
+	  <function>
+		<alias>domain</alias>
+	  </function>
+	  <function>
+		<alias>node</alias>
+		<orderIndex>2</orderIndex>
+	  </function>
+	  <function>
+		<alias>qualify_time</alias>
+		<orderIndex>3</orderIndex>
+		<partitionKey>true</partitionKey>
+	  </function>
+	  <function>
+		<alias>uploadtime</alias>
+	  </function>
+	</functions>
+
+</callHomeRequest>

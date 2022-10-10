@@ -1,0 +1,9 @@
+SELECT /*OLYMPUS<CHR:DBARCH_Trigger_Metadata_EA>*/ 
+deat.table_name              AS table_name, 
+deat.column_name             AS column_name, 
+deat.pe_col_name             AS pe_col_name, 
+deat.parent_name             AS parent_name, 
+deat.entity_activity_type_cd AS entity_activity_type_cd, 
+deat.active_ind              AS active_ind, 
+deat.updt_dt_tm              AS dbarch_updt_dt_tm 
+FROM   v500.dm_entity_activity_trigger deat 

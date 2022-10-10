@@ -1,0 +1,10 @@
+select
+  /*OLYMPUS<CHR:DBARCH_Trigger_Data_For_EA>*/
+  dt.trigger_name as trigger_name,
+  dt.table_name as table_name,
+  dt.status as status
+from
+  dba_triggers dt
+where
+  dt.owner = 'V500'
+  and dt.trigger_name like 'TRG%_EA'
