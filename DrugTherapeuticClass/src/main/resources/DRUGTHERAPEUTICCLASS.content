@@ -1,0 +1,95 @@
+SELECT /*OLYMPUS:CHR<DRUGTHERAPEUTICCLASS>*/
+       order_catalog.primary_mnemonic AS DRUG_NAME, 
+       order_catalog.cki              AS DRUG_CKI, 
+       order_catalog.catalog_cd, 
+       MDC_SUB.category_name          AS THERAPEUTIC_CATEGORY, 
+       MDC.category_name              AS SUB_THERAP_CAT, 
+       MX.drug_identifier             AS DNUM, 
+       NDC.ndc_code, 
+       C_A.cost                       AS A_COST, 
+       C_W.cost                       AS W_COST, 
+       C_F.cost                       AS F_COST, 
+       D.inner_package_size, 
+       D.outer_package_size, 
+       D.main_multum_drug_code, 
+       DC.csa_schedule, 
+       DC.dose_form_code, 
+       DC.dose_form_cki, 
+       DC.j_code, 
+       DC.j_code_description, 
+       DC.principal_route_cki, 
+       DC.principal_route_code, 
+       DC.product_strength_code 
+FROM   mltm_category_drug_xref MX, 
+       mltm_category_sub_xref MX_SUB, 
+       mltm_drug_categories MDC_SUB, 
+       mltm_drug_categories MDC, 
+       order_catalog, 
+       mltm_ndc_cost NDC, 
+       mltm_ndc_cost C_A, 
+       mltm_ndc_cost C_W, 
+       mltm_ndc_cost C_F, 
+       mltm_ndc_core_description D, 
+       mltm_ndc_main_drug_code DC 
+WHERE  MX.multum_category_id = MDC.multum_category_id 
+       AND order_catalog.cki = Concat('MUL.ORD!', MX.drug_identifier) 
+       AND order_catalog.cki IS NOT NULL 
+       AND MDC.multum_category_id = MX_SUB.sub_category_id 
+       AND MX_SUB.multum_category_id = MDC_SUB.multum_category_id 
+       AND NDC.ndc_code = D.ndc_code 
+       AND NDC.ndc_code = C_A.ndc_code(+) 
+       AND C_A.inventory_type (+) = 'A' 
+       AND NDC.ndc_code = C_W.ndc_code(+) 
+       AND C_W.inventory_type (+) = 'W' 
+       AND NDC.ndc_code = C_F.ndc_code(+) 
+       AND C_F.inventory_type (+) = 'F' 
+       AND DC.main_multum_drug_code = D.main_multum_drug_code 
+       AND DC.drug_identifier = MX.drug_identifier 
+UNION 
+SELECT order_catalog.primary_mnemonic AS DRUG_NAME, 
+       order_catalog.cki              AS DRUG_CKI, 
+       order_catalog.catalog_cd, 
+       MDC_SUB.category_name          AS PARENT_THERAP_CAT, 
+       MDC.category_name              AS SUB_THERAP_CAT, 
+       MX.drug_identifier             AS DNUM, 
+       NDC.ndc_code, 
+       C_A.cost                       AS A_COST, 
+       C_W.cost                       AS W_COST, 
+       C_F.cost                       AS F_COST, 
+       D.inner_package_size, 
+       D.outer_package_size, 
+       D.main_multum_drug_code, 
+       DC.csa_schedule, 
+       DC.dose_form_code, 
+       DC.dose_form_cki, 
+       DC.j_code, 
+       DC.j_code_description, 
+       DC.principal_route_cki, 
+       DC.principal_route_code, 
+       DC.product_strength_code 
+FROM   mltm_category_drug_xref MX, 
+       mltm_ndc_main_drug_code MNDC, 
+       mltm_category_sub_xref MX_SUB, 
+       mltm_drug_categories MDC_SUB, 
+       mltm_drug_categories MDC, 
+       order_catalog, 
+       mltm_ndc_cost NDC, 
+       mltm_ndc_cost C_A, 
+       mltm_ndc_cost C_W, 
+       mltm_ndc_cost C_F, 
+       mltm_ndc_core_description D, 
+       mltm_ndc_main_drug_code DC 
+WHERE  MX.multum_category_id = MDC.multum_category_id 
+       AND MNDC.drug_identifier = MX.drug_identifier 
+       AND order_catalog.cki = Concat('MUL.MMDC!', MNDC.main_multum_drug_code) 
+       AND MDC.multum_category_id = MX_SUB.sub_category_id 
+       AND MX_SUB.multum_category_id = MDC_SUB.multum_category_id 
+       AND NDC.ndc_code = D.ndc_code 
+       AND NDC.ndc_code = C_A.ndc_code(+) 
+       AND C_A.inventory_type (+) = 'A' 
+       AND NDC.ndc_code = C_W.ndc_code(+) 
+       AND C_W.inventory_type (+) = 'W' 
+       AND NDC.ndc_code = C_F.ndc_code(+) 
+       AND C_F.inventory_type (+) = 'F' 
+       AND DC.main_multum_drug_code = D.main_multum_drug_code 
+       AND DC.drug_identifier = MX.drug_identifier 

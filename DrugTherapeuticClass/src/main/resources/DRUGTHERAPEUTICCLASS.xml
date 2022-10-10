@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<callHomeRequest xmlns="http://www.cerner.com/CallHomeRequest"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.cerner.com/CallHomeRequest http://repo.esm.cerner.corp/schema/callhomerequest.xsd">
+  <name>DRUGTHERAPEUTICCLASS</name>
+  <description>collects the therapeutic classes related to drugs</description>
+  <type>SQL</type>
+  <format>JSON</format>
+  <requestQueue>MILL_MONTHLY_CONFIG</requestQueue>
+  <serviceFilter><![CDATA[var result = false; var dsarray = properties.getDataStores(); for(var i=0; i<dsarray.length;i++) {if(dsarray[i].getPurpose() != null && dsarray[i].getPurpose().equalsIgnoreCase('MILLENNIUM')){result = true;} } result;]]></serviceFilter>
+  <targetFilter><![CDATA[properties.getPurpose() != null && properties.getPurpose() == 'MILLENNIUM']]></targetFilter>
+  <factory>queued.callhome.activity.factory</factory>
+  <scheduler><![CDATA[<scheduler alignment-id="recovery.alignment.factory" schedule="1-HOUR" queue-depth="-1" max-seconds="259200"><scheduler alignment-id="approximate.alignment.factory" schedule="1-MONTH" min-offset="7200" max-offset="10800" /></scheduler>]]></scheduler>
+  <timeout>1200</timeout>
+  <batchSize>10000</batchSize>
+  <verticaSchema>olympus</verticaSchema>
+  <hadoopConfig>
+    <payloadMappings>/olympus/millennium/misc/drugtherapeuticclass-payload-mappings.xml</payloadMappings>
+    <jobName>hadoop-mill-config-job</jobName>
+  </hadoopConfig>
+
+   <fields>
+	<field> 
+      <column>DRUG_NAME</column> 
+ 	  <description>Order catalog primary mnemonic assigned to the med order</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>100</length> 
+    </field>
+	<field> 
+      <column>DRUG_CKI</column> 
+ 	  <description>This field is based on the order_catalog table and is used for meds processing</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>255</length> 
+    </field>
+	<field> 
+       <column>CATALOG_CD</column> 
+ 	  <description>Order catalog assigned to the order</description> 
+ 	  <datatype>integer</datatype> 
+    </field>
+	<field> 
+      <column>THERAPEUTIC_CATEGORY</column> 
+ 	  <description>This field contains a textual description of the therapeutic category referenced by multum_category_id</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>120</length> 
+    </field>
+	<field> 
+      <column>SUB_THERAP_CAT</column> 
+ 	  <description>This field contains a textual description of the therapeutic category referenced by multum_category_id</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>120</length> 
+    </field>
+	<field> 
+      <column>DNUM</column> 
+ 	  <description>This field contains Multum's identification codes for generic drugs</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>6</length> 
+    </field>
+	<field> 
+      <column>NDC_CODE</column> 
+ 	  <description>National Drug Code</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>25</length> 
+    </field>
+	<field> 
+      <column>A_COST</column> 
+ 	  <description>This field contains a specific cost for a drug with an inventory type of 'A'</description> 
+ 	  <datatype>double</datatype> 
+    </field>
+	<field> 
+      <column>W_COST</column> 
+ 	  <description>This field contains a specific cost for a drug with an inventory type of 'W'</description> 
+ 	  <datatype>double</datatype> 
+    </field>
+	<field> 
+      <column>F_COST</column> 
+ 	  <description>This field contains a specific cost for a drug with an inventory type of 'F'</description> 
+ 	  <datatype>double</datatype> 
+    </field>
+	<field> 
+      <column>INNER_PACKAGE_SIZE</column> 
+ 	  <description>This field represents the number of individual units present in the innermost packaging of a drug</description> 
+ 	  <datatype>double</datatype> 
+    </field>
+	<field> 
+      <column>OUTER_PACKAGE_SIZE</column> 
+ 	  <description>This field designates the total number of inner packages present in the final packaged product. Not all drug products require an outer package size for a complete representation of the packaging</description> 
+ 	  <datatype>double</datatype> 
+    </field>
+	<field> 
+      <column>MAIN_MULTUM_DRUG_CODE</column> 
+ 	  <description>The Main Multum Drug Code (MMDC) is Multum's designator for groups of similar drug products</description> 
+ 	  <datatype>integer</datatype> 
+    </field>
+	<field> 
+      <column>CSA_SCHEDULE</column> 
+ 	  <description>This field describes the drug class assigned to a specific product type (MMDC) under the Controlled Substances Act of 1970</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>2</length> 
+    </field>
+	<field> 
+      <column>DOSE_FORM_CODE</column> 
+ 	  <description>This field contains a numeric designation for a dose form</description> 
+ 	  <datatype>integer</datatype> 
+    </field>
+	<field> 
+      <column>DOSE_FORM_CKI</column> 
+ 	  <description>CKI Code</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>255</length> 
+    </field>
+	<field> 
+      <column>J_CODE</column> 
+ 	  <description>This is Multum's designation for the Health Care Common Procedure Code (J-Code) used for submitting claims to insurance organizations</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>10</length> 
+    </field>
+	<field> 
+      <column>J_CODE_DESCRIPTION</column> 
+ 	  <description>This field contains the full text of the Health Care Common Procedures Billing Code Description</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>50</length> 
+    </field>
+	<field> 
+      <column>PRINCIPAL_ROUTE_CKI</column> 
+ 	  <description>CKI Code</description> 
+ 	  <datatype>string</datatype> 
+ 	  <length>255</length> 
+    </field>
+	<field> 
+      <column>PRINCIPAL_ROUTE_CODE</column> 
+ 	  <description>This field contains a code for the principal (or most common) route of administration for a specific drug (MMDC)</description> 
+ 	  <datatype>integer</datatype> 
+    </field>
+	<field> 
+      <column>PRODUCT_STRENGTH_CODE</column> 
+ 	  <description>This field contains a unique code for each product strength description</description> 
+ 	  <datatype>integer</datatype> 
+    </field>
+   </fields> 
+<functions>
+  <function>
+    <alias>client</alias>
+    <orderIndex>1</orderIndex>
+  </function>
+  <function>
+    <alias>enterprise</alias>
+  </function>
+  <function>
+    <alias>domain</alias>
+  </function>
+  <function>
+    <alias>node</alias>
+    <orderIndex>2</orderIndex>
+  </function>
+  <function>
+    <alias>qualify_time</alias>
+    <orderIndex>3</orderIndex>
+    <partitionKey>true</partitionKey>
+  </function>
+  <function>
+    <alias>uploadtime</alias>
+  </function>
+</functions>
+</callHomeRequest>
